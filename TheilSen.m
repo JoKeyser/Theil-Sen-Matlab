@@ -3,27 +3,30 @@ function [m, b] = TheilSen(data)
 %
 % [m, b] = TheilSen(data)
 %
-% data: A MxD matrix with M observations. The first D-1 columns are the
-%       explanatory variables and the Dth column is the response such that
-%       data = [x1, x2, ..., x(D-1), y];
+% INPUT
+%   data: A MxD matrix with M observations. The first D-1 columns are the
+%         explanatory variables and the Dth column is the response such that
+%         data = [x1, x2, ..., x(D-1), y];
 %
-% m: Estimated slope of each explanatory variable with respect to the
-%    response varuable. Therefore, m will be a vector of D-1 slopes.
-% b: Estimated offsets.
+% OUTPUT
+%   m: Estimated slope of each explanatory variable with respect to the
+%      response varuable. Therefore, m will be a vector of D-1 slopes.
+%   b: Estimated offsets.
 %
+% EXAMPLE
+%   See accompanying file example.m.
 %
-% Source:
-%   Gilbert, Richard O. (1987), "6.5 Sen's Nonparametric Estimator of
-%   Slope", Statistical Methods for Environmental Pollution Monitoring,
-%   John Wiley and Sons, pp. 217-219, ISBN 978-0-471-28878-7
+% REFERENCE
+%   - Gilbert, Richard O. (1987), "6.5 Sen's Nonparametric Estimator of Slope",
+%     Statistical Methods for Environmental Pollution Monitoring,
+%     John Wiley and Sons, pp. 217-219, ISBN 978-0-471-28878-7
 %
+% AUTHORS
+%   2014-2015 Zachary Danziger
+%   2022 Johannes Keyser
 %
-%
-% %%% Z. Danziger October 2014 %%%
-% edits Z. Danziger September 2015:
-%	- updated help
-%   - speed increase for 2D case
-%
+% LICENSE
+%   Simplified BSD license, see accompanying file license.txt.
 
 sz = size(data);
 if length(sz) ~= 2 || sz(1) < 2
