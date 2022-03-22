@@ -27,6 +27,12 @@ Clone/copy the files to your computer, and add the folder to Matlab's path varia
 
 TODO: Add examples, and show some expected output.
 
+### Example
+
+You can see an example in [example.m](example.m).
+
+<img src="example.svg" alt="plot from example.m" width=200px />
+
 ## Roadmap
 
 - Add more documentation.
