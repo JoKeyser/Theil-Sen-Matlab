@@ -1,17 +1,18 @@
-function [m, b] = TheilSen(data)
+function [b1, b0] = TheilSen(data)
 % Performs Theil-Sen robust linear regression on data.
 %
-% [m, b] = TheilSen(data)
+% [b1, b0] = TheilSen(data)
 %
 % INPUT
-%   data: A MxD matrix with M observations. The first D-1 columns are the
-%         explanatory variables and the Dth column is the response such that
-%         data = [x1, x2, ..., x(D-1), y];
+%   data: A Num_Obs x Num_Dim matrix with Num_Obs observations.
+%         The first Num_Dim - 1 columns are the explanatory variables and the
+%         last column is the response such that
+%         data = [x1, x2, ..., x(Num_Dim - 1), y];
 %
 % OUTPUT
-%   m: Estimated slope of each explanatory variable with respect to the
-%      response varuable. Therefore, m will be a vector of D-1 slopes.
-%   b: Estimated offsets.
+%   b1: Estimated slope of each explanatory variable with respect to the
+%       response variable. Therefore, b1 will be a vector of Num_Dim - 1 slopes.
+%   b0: Estimated offsets.
 %
 % EXAMPLE
 %   See accompanying file example.m.
@@ -22,37 +23,45 @@ function [m, b] = TheilSen(data)
 %     John Wiley and Sons, pp. 217-219, ISBN 978-0-471-28878-7
 %
 % AUTHORS
-%   2014-2015 Zachary Danziger
+%   2014-15 Zachary Danziger
 %   2022 Johannes Keyser
 %
 % LICENSE
-%   Simplified BSD license, see accompanying file license.txt.
+%   BSD 2-clause "simplified" license, see accompanying file license.txt.
 
 sz = size(data);
-if length(sz) ~= 2 || sz(1) < 2
-    error('Expecting MxD data matrix with at least 2 observations.')
+
+if length(sz) ~= 2
+    error('Expecting a 2D data matrix Num_Obs x Num_Dim.')
 end
 
-if sz(2) == 2  % normal 2D case
-    C = nan(sz(1));
+Num_Obs = sz(1);  % number of observations
+Num_Dim = sz(2);  % number of dimensions
 
-    for i = 1:sz(1)
+if Num_Obs < 2
+    error('Expecting a data matrix Obs x Dim with at least 2 observations.')
+end
+
+if Num_Dim == 2  % normal 2D case
+    C = nan(Num_Obs);
+
+    for i = 1:Num_Obs
         % accumulate slopes
         C(i, i:end) = (data(i, 2) - data(i:end, 2)) ./ ...
                       (data(i, 1) - data(i:end, 1));
     end
 
-    m = nanmedian(C(:));  % calculate slope estimate
+    b1 = nanmedian(C(:));  % calculate slope estimate
     
     if nargout == 2
         % calculate intercept if requested
-        b = nanmedian(data(:, 2) - m * data(:, 1));
+        b0 = nanmedian(data(:, 2) - b1 * data(:, 1));
     end
     
 else
-    C = nan(sz(1), sz(2)-1, sz(1));
+    C = nan(Num_Obs, Num_Dim-1, Num_Obs);
 
-    for i = 1:sz(1)
+    for i = 1:Num_Obs
         % accumulate slopes
         C(:, :, i) = bsxfun( @rdivide, data(i, end) - data(:, end), ...
             bsxfun(@minus, data(i, 1:end-1), data(:, 1:end-1)) );
@@ -60,11 +69,11 @@ else
 
     % stack layers of C to 2D
     Cprm = reshape( permute(C, [1, 3, 2]), [], size(C, 2), 1 );
-    m = nanmedian(Cprm, 1);	 % calculate slope estimate
+    b1 = nanmedian(Cprm, 1);	 % calculate slope estimate
     
     if nargout == 2
         % calculate all intercepts if requested
-        b = nanmedian( bsxfun(@minus, data(:, end), ...
-                       bsxfun(@times, m, data(:, 1:end-1))) );
+        b0 = nanmedian( bsxfun(@minus, data(:, end), ...
+                        bsxfun(@times, b1, data(:, 1:end-1))) );
     end
 end
