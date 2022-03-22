@@ -29,9 +29,11 @@ TODO: Add examples, and show some expected output.
 
 ### Example
 
-You can see an example in [example.m](example.m).
+The script [example.m](example.m) simulates data based on known, true values.
+It then fits and compares the Least-Squares with the Theil-Sen estimator.
+Note how a few "unlucky" outliers can bias the least-squares estimate, but have little effect on the Theil-Sen estimator.
 
-<img src="example.svg" alt="plot from example.m" width=200px />
+<img src="example.svg" alt="plot from example.m" width=500px />
 
 ## Roadmap
 
