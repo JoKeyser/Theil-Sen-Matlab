@@ -51,11 +51,11 @@ if Num_Dim == 2  % normal 2D case
                       (data(i, 1) - data(i:end, 1));
     end
 
-    b1 = nanmedian(C(:));  % calculate slope estimate
+    b1 = median(C(:), 'omitnan');  % calculate slope estimate
     
     if nargout == 2
         % calculate intercept if requested
-        b0 = nanmedian(data(:, 2) - b1 * data(:, 1));
+        b0 = median(data(:, 2) - b1 * data(:, 1), 'omitnan');
     end
     
 else
@@ -69,11 +69,14 @@ else
 
     % stack layers of C to 2D
     Cprm = reshape( permute(C, [1, 3, 2]), [], size(C, 2), 1 );
-    b1 = nanmedian(Cprm, 1);	 % calculate slope estimate
+    b1 = median(Cprm, 1, 'omitnan');  % calculate slope estimate
     
     if nargout == 2
         % calculate all intercepts if requested
         b0 = nanmedian( bsxfun(@minus, data(:, end), ...
-                        bsxfun(@times, b1, data(:, 1:end-1))) );
+                        bsxfun(@times, b1, data(:, 1:end-1))), ...
+                        'omitnan');
     end
+end
+
 end
