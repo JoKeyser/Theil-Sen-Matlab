@@ -2,7 +2,7 @@
 
 ## Description
 
-A stand-alone Theil-Sen estimator for robust regression in Matlab.
+A stand-alone Theil-Sen estimator for robust simple regression in Matlab.
 
 (Stand-alone: No toolbox required.)
 
@@ -41,13 +41,6 @@ It then fits and compares the Least-Squares with the Theil-Sen estimator.
 Note how a few "unlucky" outliers can bias the least-squares estimate, but have little effect on the Theil-Sen estimator.
 
 <img src="example.svg" alt="plot from example.m" width=500px />
-
-## Roadmap
-
-- Add more documentation.
-    - [ ] Mention original use case.
-- [ ] Change input interface to match Matlab's `robustfit()`.
-- [ ] Add more checks for input sanity.
 
 ## Changelog
 

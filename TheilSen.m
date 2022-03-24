@@ -1,7 +1,8 @@
-function [b1, b0] = TheilSen(X, y)
+function [b0, b1] = TheilSen(X, y)
 % THEILSEN performs Theil-Sen robust, simple linear regression(s) of X on y.
 % 
-% Note that two or more predictor variables in X are treated as independent
+% For convenience, the input X may contain more than one predictor variable.
+% But note that two or more predictor variables in X are treated as independent
 % simple regressions; do not confuse the output with multiple regression.
 %
 % THEILSEN treats NaNs in X or y as missing values, and ignores them.
@@ -12,10 +13,12 @@ function [b1, b0] = TheilSen(X, y)
 %   y: A column vector containing the observations of the response variable.
 %
 % OUTPUT
-%   b1: Estimated slope(s) for each predictor variable in X with respect to the
-%       response variable. Therefore, b1 will be a vector with as many slopes as
-%       column vectors in X.
-%   b0: Estimated offset(s) for each predictor variable in X.
+%   b0: Estimated offset(s) for each predictor variable in X with respect to y
+%       (as independent simple regression offsets per predictor).
+%   b1: Estimated slope(s) for each predictor variable in X with respect to y
+%       (as independent simple regression slopes per predictor).
+%
+%   Vectors b0 and b1 contain as many entries as column vectors in X.
 %
 % EXAMPLE
 %   See accompanying file example.m.
@@ -47,50 +50,44 @@ if sizeX(1) ~= sizeY(1)
     error('The number of rows (observations) of X and y must match.')
 end
 
-Num_Obs = sizeX(1);  % rows are number of observations
-Num_Pred = sizeX(2);  % columns are number of (independent) predictor variables
+Num_Obs = sizeX(1);  % rows in X and y are observations
+Num_Pred = sizeX(2);  % columns in X are (independent) predictor variables
 
 if Num_Obs < 2
     error('Expecting a data matrix Obs x Dim with at least 2 observations.')
 end
 
-if Num_Pred == 1  % X is a vector, i.e. normal 2D case
-    C = nan(Num_Obs);
+%%% For the curious, here more readable code for 1 predictor column in X.
+%%% However, this special case is omitted for the sake of code simplicity.
+% % calculate slope for all pairs of data points
+% C = nan(Num_Obs, Num_Obs);
+% for i = 1:Num_Obs-1
+%     C(i, i:end) = (y(i) - y(i:end)) ./ (X(i) - X(i:end));
+% end
+% % estimate slope as the median of all pairwise slopes
+% b1 = median(C(:), 'omitnan');
+% % estimate offset as the median of all pairwise offsets
+% b0 = median(y - b1 * X, 'omitnan');
 
-    % calculate slopes of all possible data point pairs
-    for i = 1:Num_Obs-1
-        C(i, i:end) = (y(i) - y(i:end)) ./ (X(i) - X(i:end));
-    end
+% calculate slope, per predictor, for all pairs of data points
+C = nan(Num_Obs, Num_Pred, Num_Obs);
+for i = 1:Num_Obs
+    C(:, :, i) = bsxfun(@rdivide, ...
+        bsxfun(@minus, y(i), y(:)), ...
+        bsxfun(@minus, X(i, 1:end), X(:, 1:end)));
+end
 
-    % the slope estimate is the median of all pairwise slopes
-    b1 = median(C(:), 'omitnan');
-    
-    if nargout == 2
-        % calculate intercept if requested
-        b0 = median(y - b1 * X, 'omitnan');
-    end
-    
-else  % more than 1 predictor variable in X
+% stack layers of C to 2D
+Cprm = reshape( permute(C, [1, 3, 2]), [], size(C, 2), 1 );
 
-    C = nan(Num_Obs, Num_Pred, Num_Obs);
+% estimate slope as the median of all pairwise slopes (per predictor column)
+b1 = median(Cprm, 1, 'omitnan');
 
-    for i = 1:Num_Obs
-        % accumulate slopes
-        C(:, :, i) = bsxfun( @rdivide, ...
-            y(i) - y(:), ...
-            bsxfun(@minus, X(i, 1:end), X(:, 1:end)) );
-    end
-
-    % stack layers of C to 2D
-    Cprm = reshape( permute(C, [1, 3, 2]), [], size(C, 2), 1 );
-    b1 = median(Cprm, 1, 'omitnan');  % calculate slope estimate
-    
-    if nargout == 2
-        % calculate all intercepts if requested
-        b0 = median( bsxfun(@minus, y(:), ...
-                     bsxfun(@times, b1, X(:, 1:end))), ...
-                     'omitnan');
-    end
+% estimate offset as the median of all pairwise offsets (per predictor column)
+if nargout == 2  % only compute if requested/used
+    b0 = median(bsxfun(@minus, y(:), ...
+                bsxfun(@times, b1, X(:, 1:end))), ...
+                'omitnan');
 end
 
 end
