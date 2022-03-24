@@ -1,18 +1,21 @@
-function [b1, b0] = TheilSen(data)
-% Performs Theil-Sen robust linear regression on data.
+function [b1, b0] = TheilSen(X, y)
+% THEILSEN performs Theil-Sen robust, simple linear regression(s) of X on y.
+% 
+% Note that multiple predictor variables in X are treated as independent
+% simple regressions; don't confuse the output with multiple regression.
 %
-% [b1, b0] = TheilSen(data)
+% THEILSEN treats NaNs in X or y as missing values, and ignores them.
 %
 % INPUT
-%   data: A Num_Obs x Num_Dim matrix with Num_Obs observations.
-%         The first Num_Dim - 1 columns are the explanatory variables and the
-%         last column is the response such that
-%         data = [x1, x2, ..., x(Num_Dim - 1), y];
+%   X: One or more columns vectors containing explanatory/predictor variables.
+%      Rows contain the observed predictor variables.
+%   y: A column vector containing the observations of the response variable.
 %
 % OUTPUT
-%   b1: Estimated slope of each explanatory variable with respect to the
-%       response variable. Therefore, b1 will be a vector of Num_Dim - 1 slopes.
-%   b0: Estimated offsets.
+%   b1: Estimated slope(s) for each predictor variable in X with respect to the
+%       response variable. Therefore, b1 will be a vector with as many slopes as
+%       column vectors in X.
+%   b0: Estimated offset(s) for each predictor variable in X.
 %
 % EXAMPLE
 %   See accompanying file example.m.
@@ -29,42 +32,53 @@ function [b1, b0] = TheilSen(data)
 % LICENSE
 %   BSD 2-clause "simplified" license, see accompanying file license.txt.
 
-sz = size(data);
+sizeX = size(X);
+sizeY = size(y);
 
-if length(sz) ~= 2
-    error('Expecting a 2D data matrix Num_Obs x Num_Dim.')
+if length(sizeY) ~= 2 || sizeY(1) < 2 || sizeY(2) ~= 1 || ~isnumeric(X)
+    error('Input y must be a column array of at least 2 observed responses.')
 end
 
-Num_Obs = sz(1);  % number of observations
-Num_Dim = sz(2);  % number of dimensions
+if length(sizeX) ~= 2 || ~isnumeric(X)
+    error('Input X must be one or more column arrays of predictor variables.')
+end
+
+if sizeX(1) ~= sizeY(1)
+    error('The number of rows (observations) of X and y must match.')
+end
+
+Num_Obs = sizeX(1);  % rows are number of observations
+Num_Pred = sizeX(2);  % columns are number of (independent) predictor variables
 
 if Num_Obs < 2
     error('Expecting a data matrix Obs x Dim with at least 2 observations.')
 end
 
-if Num_Dim == 2  % normal 2D case
+if Num_Pred == 1  % X is a vector, i.e. normal 2D case
     C = nan(Num_Obs);
 
-    for i = 1:Num_Obs
-        % accumulate slopes
-        C(i, i:end) = (data(i, 2) - data(i:end, 2)) ./ ...
-                      (data(i, 1) - data(i:end, 1));
+    % calculate slopes of all possible data point pairs
+    for i = 1:Num_Obs-1
+        C(i, i:end) = (y(i) - y(i:end)) ./ (X(i) - X(i:end));
     end
 
-    b1 = median(C(:), 'omitnan');  % calculate slope estimate
+    % the slope estimate is the median of all pairwise slopes
+    b1 = median(C(:), 'omitnan');
     
     if nargout == 2
         % calculate intercept if requested
-        b0 = median(data(:, 2) - b1 * data(:, 1), 'omitnan');
+        b0 = median(y - b1 * X, 'omitnan');
     end
     
-else
-    C = nan(Num_Obs, Num_Dim-1, Num_Obs);
+else  % more than 1 predictor variable in X
+
+    C = nan(Num_Obs, Num_Pred, Num_Obs);
 
     for i = 1:Num_Obs
         % accumulate slopes
-        C(:, :, i) = bsxfun( @rdivide, data(i, end) - data(:, end), ...
-            bsxfun(@minus, data(i, 1:end-1), data(:, 1:end-1)) );
+        C(:, :, i) = bsxfun( @rdivide, ...
+            y(i) - y(:), ...
+            bsxfun(@minus, X(i, 1:end), X(:, 1:end)) );
     end
 
     % stack layers of C to 2D
@@ -73,8 +87,8 @@ else
     
     if nargout == 2
         % calculate all intercepts if requested
-        b0 = median( bsxfun(@minus, data(:, end), ...
-                     bsxfun(@times, b1, data(:, 1:end-1))), ...
+        b0 = median( bsxfun(@minus, y(:), ...
+                     bsxfun(@times, b1, X(:, 1:end))), ...
                      'omitnan');
     end
 end
