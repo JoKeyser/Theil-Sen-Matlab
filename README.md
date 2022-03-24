@@ -8,12 +8,12 @@ A stand-alone Theil-Sen estimator for robust regression in Matlab.
 
 ### Theil-Sen estimator
 
-A [Theil-Sen estimator](https://en.wikipedia.org/wiki/Theil%E2%80%93Sen_estimator) provides robust linear regression in the 2D plane:
+A [Theil-Sen estimator](https://en.wikipedia.org/wiki/Theil%E2%80%93Sen_estimator) provides robust, simple linear regression in the 2D plane:
 The resulting estimates of slope and intercept are relatively insensitive to outliers.
 
-The present implementation of [TheilSen.m](TheilSen.m) is exact but "naive":
+The implementation of [TheilSen.m](TheilSen.m) is exact but "naive":
 It generates the set of all pairs of the _n_ input samples, resulting in an overall complexity of _O(n²)_ in both speed and space.
-The resulting slope and offset are the median slope and offset of all lines defined by the data point pairs.
+The resulting slope and offset are the median slope and offset of the lines defined by all data point pairs.
 
 (Note that other implementations of the algorithm achieve better complexity, and are thus much faster for large amounts of data points.)
 

@@ -1,8 +1,8 @@
 function [b1, b0] = TheilSen(X, y)
 % THEILSEN performs Theil-Sen robust, simple linear regression(s) of X on y.
 % 
-% Note that multiple predictor variables in X are treated as independent
-% simple regressions; don't confuse the output with multiple regression.
+% Note that two or more predictor variables in X are treated as independent
+% simple regressions; do not confuse the output with multiple regression.
 %
 % THEILSEN treats NaNs in X or y as missing values, and ignores them.
 %

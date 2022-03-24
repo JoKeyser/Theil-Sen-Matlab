@@ -30,7 +30,7 @@ data_y(outlr_idx) = outlr_y;
 est_ls = [ones(N_total, 1), data_x] \ data_y;
 
 % Estimate Theil-Sen parameters.
-[m, b] = TheilSen([data_x, data_y]);
+[m, b] = TheilSen(data_x, data_y);
 est_ts = [b, m];
 
 % Plot everything and add comparison of estimates to title.
