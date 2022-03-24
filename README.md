@@ -4,18 +4,18 @@
 
 A stand-alone Theil-Sen estimator for robust simple regression in Matlab.
 
-(Stand-alone: No toolbox required.)
+("Stand-alone" means that no toolbox is required.)
 
 ### Theil-Sen estimator
 
-A [Theil-Sen estimator](https://en.wikipedia.org/wiki/Theil%E2%80%93Sen_estimator) provides robust, simple linear regression in the 2D plane:
+A [Theil-Sen estimator](https://en.wikipedia.org/wiki/Theil%E2%80%93Sen_estimator) provides robust linear regression for one predictor:
 The resulting estimates of slope and intercept are relatively insensitive to outliers.
 
-The implementation of [TheilSen.m](TheilSen.m) is exact but naïve:
+The implementation in [TheilSen.m](TheilSen.m) is exact but naïve:
 It generates the set of all pairs of the _n_ input samples, resulting in an overall complexity of _O(n²)_ in speed and space.
 The resulting slope and offset are the median slope and offset of the lines defined by all data point pairs.
 
-(Note that alternative implementations of the algorithm have lower complexity, and thus much faster for large amounts of input samples.)
+(Note that alternative implementations of the algorithm have lower complexity, and are thus much faster for large amounts of input samples.)
 
 ### No toolbox required
 
@@ -23,8 +23,8 @@ This code is based on [Theil-Sen Robust Linear Regression](https://mathworks.com
 A key modification is to use `median(X, 'omitnan')` instead of `nanmedian(X)` to avoid dependency on the (commercially licensed) [Statistics Toolbox](https://mathworks.com/products/statistics.html).
 See the [changelog](#changelog) below for further modifications.
 
-(Note that there are several other implementations of the Theil-Sen estimator on Mathworks's [File Exchange](https://mathworks.com/matlabcentral/fileexchange).
-Unfortunately all were found to depend on the Statistics Toolbox, [except one](https://mathworks.com/matlabcentral/fileexchange/43135-regression-utilities), which was judged to be slower and less versatile.)
+(Note that there are several other implementations on Mathworks's [File Exchange](https://mathworks.com/matlabcentral/fileexchange).
+Unfortunately most were found to depend on the Statistics Toolbox, [except one](https://mathworks.com/matlabcentral/fileexchange/43135-regression-utilities), which was judged to be slower and less versatile.)
 
 ## Installation
 
@@ -51,7 +51,9 @@ Note how a few "unlucky" outliers can bias the least squares estimate (LS), but 
 
 ## Contributing and project status
 
-This project is relatively unmaintained, and only shared as-is in the hope to be helpful.
+This project is relatively unmaintained.
+It is shared as-is in the hope to be helpful (see [license.txt](license.txt) for legal terms).
+
 If you find a bug, feel free to let the author(s) know.
 Feature requests should be directed to the original author (see below).
 
