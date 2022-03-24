@@ -11,15 +11,15 @@ A stand-alone Theil-Sen estimator for robust simple regression in Matlab.
 A [Theil-Sen estimator](https://en.wikipedia.org/wiki/Theil%E2%80%93Sen_estimator) provides robust, simple linear regression in the 2D plane:
 The resulting estimates of slope and intercept are relatively insensitive to outliers.
 
-The implementation of [TheilSen.m](TheilSen.m) is exact but "naive":
-It generates the set of all pairs of the _n_ input samples, resulting in an overall complexity of _O(n²)_ in both speed and space.
+The implementation of [TheilSen.m](TheilSen.m) is exact but naïve:
+It generates the set of all pairs of the _n_ input samples, resulting in an overall complexity of _O(n²)_ in speed and space.
 The resulting slope and offset are the median slope and offset of the lines defined by all data point pairs.
 
-(Note that other implementations of the algorithm achieve better complexity, and are thus much faster for large amounts of data points.)
+(Note that alternative implementations of the algorithm have lower complexity, and thus much faster for large amounts of input samples.)
 
 ### No toolbox required
 
-This code is based on [Theil-Sen Robust Linear Regression](https://mathworks.com/matlabcentral/fileexchange/48294-theil-sen-robust-linear-regression), version 1.2.0.0, by [Zachary Danziger](https://mathworks.com/matlabcentral/profile/authors/1044524).
+This code is based on [Theil-Sen Robust Linear Regression](https://mathworks.com/matlabcentral/fileexchange/48294-theil-sen-robust-linear-regression), version 1.2.0.0, by Zachary Danziger.
 A key modification is to use `median(X, 'omitnan')` instead of `nanmedian(X)` to avoid dependency on the (commercially licensed) [Statistics Toolbox](https://mathworks.com/products/statistics.html).
 See the [changelog](#changelog) below for further modifications.
 
@@ -36,9 +36,10 @@ Please refer to the comments in the header lines of [TheilSen.m](TheilSen.m).
 
 ### Example
 
-The script [example.m](example.m) simulates data based on known, true values.
-It then fits and compares the Least-Squares with the Theil-Sen estimator.
-Note how a few "unlucky" outliers can bias the least-squares estimate, but have little effect on the Theil-Sen estimator.
+The script [example.m](example.m) simulates data based on known "true" values with minor, additive Gaussian noise.
+The data are then corrupted with a small percentage of outliers.
+It then fits and compares the least squares with the Theil-Sen estimator.
+Note how a few "unlucky" outliers can bias the least squares estimate (LS), but have little effect on the Theil-Sen estimator (TS).
 
 <img src="example.svg" alt="plot from example.m" width=500px />
 
@@ -46,17 +47,17 @@ Note how a few "unlucky" outliers can bias the least-squares estimate, but have 
 
 - October 2014 by Z. Danziger: Original version.
 - September 2015 by Z. Danziger: Updated help, speed increase for 2D case
-- March 2022 by J. Keyser: Adjusted formatting, added documentation, improved example and added plot, replace `nanmedian(X)` with `median(X, 'omitnan')`, ...
+- March 2022 by J. Keyser: Adjusted formatting, added documentation, improved example and added plot, replaced `nanmedian(X)` with `median(X, 'omitnan')`, removed 2D special case, restructured input and output parameters.
 
 ## Contributing and project status
 
-This project is relatively unmaintained, and only shared as-is, in the hope to be helpful.
+This project is relatively unmaintained, and only shared as-is in the hope to be helpful.
 If you find a bug, feel free to let the author(s) know.
-Feature requests should be directed to the original author.
+Feature requests should be directed to the original author (see below).
 
 ## Authors
 
-1. Zachary Danziger, original author ([Matlab profile](https://de.mathworks.com/matlabcentral/profile/authors/1044524), [Lab webpage](https://anil.fiu.edu/))
+1. Zachary Danziger, original author ([Matlab profile](https://de.mathworks.com/matlabcentral/profile/authors/1044524), [lab webpage](https://anil.fiu.edu/))
 2. Johannes Keyser
 
 ## License

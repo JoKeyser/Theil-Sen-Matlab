@@ -59,7 +59,8 @@ if Num_Obs < 2
 end
 
 %%% For the curious, here more readable code for 1 predictor column in X.
-%%% However, this special case is omitted for the sake of code simplicity.
+%%% However, the special case is absorbed in the general version for
+%%% any number of columns in X, for the sake of code simplicity.
 % % calculate slope for all pairs of data points
 % C = nan(Num_Obs, Num_Obs);
 % for i = 1:Num_Obs-1
