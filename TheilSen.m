@@ -16,8 +16,8 @@ function coef = TheilSen(X, y)
 %   coef: Estimated regression coefficients for each predictor column in X, with
 %         respect to the response variable y. Each column in coef corresponds
 %         to one predictor in X, i.e. it has as many columns as X does.
-%         The first row, i.e. coef(:, 1), contains the estimated offset(s).
-%         The second row, i.e. coef(:, 2), contains the estimated slope(s).
+%         The first row, i.e. coef(1, :), contains the estimated offset(s).
+%         The second row, i.e. coef(2, :), contains the estimated slope(s).
 %         (This output format is chosen to avoid confusion, e.g. with previous
 %          versions of this code.)
 %
