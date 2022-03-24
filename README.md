@@ -2,19 +2,26 @@
 
 ## Description
 
-A fast, stand-alone Theil-Sen estimator for robust regression in Matlab.
+A stand-alone Theil-Sen estimator for robust regression in Matlab.
+
+(Stand-alone: No toolbox required.)
 
 ### Theil-Sen estimator
 
 A [Theil-Sen estimator](https://en.wikipedia.org/wiki/Theil%E2%80%93Sen_estimator) provides robust linear regression in the 2D plane:
 The resulting estimates of slope and intercept are relatively insensitive to outliers.
 
-FIXME: Mention main idea (data point pairs), and resulting complexity.
+The present implementation of [TheilSen.m](TheilSen.m) is exact but "naive":
+It generates the set of all pairs of the _n_ input samples, resulting in an overall complexity of _O(n²)_ in both speed and space.
+The resulting slope and offset are the median slope and offset of all lines defined by the data point pairs.
 
-### No dependency on Matlab toolboxes
+(Note that other implementations of the algorithm achieve better complexity, and are thus much faster for large amounts of data points.)
+
+### No toolbox required
 
 This code is based on [Theil-Sen Robust Linear Regression](https://mathworks.com/matlabcentral/fileexchange/48294-theil-sen-robust-linear-regression), version 1.2.0.0, by [Zachary Danziger](https://mathworks.com/matlabcentral/profile/authors/1044524).
-A key modification was to use `median(X, 'omitnan')` instead of `nanmedian(X)` to avoid dependency on the (commercially licensed) [Statistics Toolbox](https://mathworks.com/products/statistics.html).
+A key modification is to use `median(X, 'omitnan')` instead of `nanmedian(X)` to avoid dependency on the (commercially licensed) [Statistics Toolbox](https://mathworks.com/products/statistics.html).
+See the [changelog](#changelog) below for further modifications.
 
 (Note that there are several other implementations of the Theil-Sen estimator on Mathworks's [File Exchange](https://mathworks.com/matlabcentral/fileexchange).
 Unfortunately all were found to depend on the Statistics Toolbox, [except one](https://mathworks.com/matlabcentral/fileexchange/43135-regression-utilities), which was judged to be slower and less versatile.)
