@@ -1,4 +1,4 @@
-function [b0, b1] = TheilSen(X, y)
+function coef = TheilSen(X, y)
 % THEILSEN performs Theil-Sen robust, simple linear regression(s) of X on y.
 % 
 % For convenience, the input X may contain more than one predictor variable.
@@ -13,12 +13,13 @@ function [b0, b1] = TheilSen(X, y)
 %   y: A column vector containing the observations of the response variable.
 %
 % OUTPUT
-%   b0: Estimated offset(s) for each predictor variable in X with respect to y
-%       (as independent simple regression offsets per predictor).
-%   b1: Estimated slope(s) for each predictor variable in X with respect to y
-%       (as independent simple regression slopes per predictor).
-%
-%   Vectors b0 and b1 contain as many entries as column vectors in X.
+%   coef: Estimated regression coefficients for each predictor column in X, with
+%         respect to the response variable y. Each column in coef corresponds
+%         to one predictor in X, i.e. it has as many columns as X does.
+%         The first row, i.e. coef(:, 1), contains the estimated offset(s).
+%         The second row, i.e. coef(:, 2), contains the estimated slope(s).
+%         (This output format is chosen to avoid confusion, e.g. with previous
+%          versions of this code.)
 %
 % EXAMPLE
 %   See accompanying file example.m.
@@ -81,13 +82,12 @@ end
 Cprm = reshape( permute(C, [1, 3, 2]), [], size(C, 2), 1 );
 
 % estimate slope as the median of all pairwise slopes (per predictor column)
-b1 = median(Cprm, 1, 'omitnan');
+b1s = median(Cprm, 1, 'omitnan');
 
 % estimate offset as the median of all pairwise offsets (per predictor column)
-if nargout == 2  % only compute if requested/used
-    b0 = median(bsxfun(@minus, y(:), ...
-                bsxfun(@times, b1, X(:, 1:end))), ...
-                'omitnan');
-end
+b0s = median(bsxfun(@minus, y(:), ...
+             bsxfun(@times, b1s, X(:, 1:end))), ...
+            'omitnan');
 
+coef = [b0s; b1s];
 end

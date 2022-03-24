@@ -30,8 +30,7 @@ data_y(outlr_idx) = outlr_y;
 est_ls = [ones(N_total, 1), data_x] \ data_y;
 
 % Estimate Theil-Sen parameters.
-[b0, b1] = TheilSen(data_x, data_y);
-est_ts = [b0, b1];
+est_ts = TheilSen(data_x, data_y);
 
 % Plot everything and add comparison of estimates to title.
 figure()
@@ -39,8 +38,8 @@ plims = [min(data_x), max(data_x)]';
 normal_idx = setdiff(1:N_total, outlr_idx);
 plot(data_x(normal_idx), data_y(normal_idx), 'ko', ...
      data_x(outlr_idx), data_y(outlr_idx), 'rx', ...
-     plims, plims * est_ls(2) + est_ls(1), '-r', ...
-     plims, plims * est_ts(2) + est_ts(1), 'b-', ...
+     plims, est_ls(1) + plims * est_ls(2) , '-r', ...
+     plims, est_ts(1) + plims * est_ts(2), 'b-', ...
      'linewidth', 2)
 legend('Normal data', 'Outlier', 'Least Squares', 'Theil-Sen', 'location', 'NW')
 title(sprintf('True: [%.3g, %.3g], LS: [%.3g, %.3g], TS: [%.3g, %.3g]', ...
@@ -48,19 +47,19 @@ title(sprintf('True: [%.3g, %.3g], LS: [%.3g, %.3g], TS: [%.3g, %.3g]', ...
 
 %% Demonstrate use of multiple predictor variables in X.
 % NOTE: You must execute cell above first.
-% create 2 different predictor columns
+% create 3 different predictor columns
 data_x1 = data_x;
-data_x2 = data_x1 * -2 + 10 + randn(size(data_x1)) * SDx_usual;
-X = [data_x1, data_x2];
-[b0, b1] = TheilSen(X, data_y);
+data_x2 = +10 - 2 * data_x1 + randn(size(data_x1)) * SDx_usual;
+data_x3 = -50 + 5 * data_x1 + randn(size(data_x1)) * SDx_usual;
+X = [data_x1, data_x2, data_x3];
+est_ts = TheilSen(X, data_y);
 
 % plot both simple regressions; note mainly the difference between x-axes
 num_pred = size(X, 2);
 figure()
 for pp = 1:num_pred
-    est_ts = [b0(pp), b1(pp)];
     subplot(1, num_pred, pp)
     plims = [min(X(:, pp)), max(X(:, pp))]';
     plot(X(:, pp), data_y, 'k^', ...
-    plims, plims * est_ts(2) + est_ts(1), 'b-', 'linewidth', 2)
+    plims, est_ts(1, pp) + plims * est_ts(2, pp), 'b-', 'linewidth', 2)
 end
