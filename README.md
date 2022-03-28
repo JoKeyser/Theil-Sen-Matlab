@@ -13,18 +13,17 @@ The resulting estimates of slope and intercept are relatively insensitive to out
 
 The implementation in [TheilSen.m](TheilSen.m) is exact but naïve:
 It generates the set of all pairs of the _n_ input samples, resulting in an overall complexity of _O(n²)_ in speed and space.
-The resulting slope and offset are the median slope and offset of the lines defined by all data point pairs.
-
+The resulting slope and offset are the median slope and offset of the lines defined by all data point pairs.  
 (Note that alternative implementations of the algorithm have lower complexity, and are thus much faster for large amounts of input samples.)
 
 ### No toolbox required
 
 This code is based on [Theil-Sen Robust Linear Regression](https://mathworks.com/matlabcentral/fileexchange/48294-theil-sen-robust-linear-regression), version 1.2.0.0, by Zachary Danziger.
-A key modification is to use `median(X, 'omitnan')` instead of `nanmedian(X)` to avoid dependency on the (commercially licensed) [Statistics Toolbox](https://mathworks.com/products/statistics.html).
-See the [changelog](#changelog) below for further modifications.
-
+A key modification is to use `median(X, 'omitnan')` instead of `nanmedian(X)` to avoid dependency on the (commercially licensed) [Statistics Toolbox](https://mathworks.com/products/statistics.html).  
 (Note that there are several other implementations on Mathworks's [File Exchange](https://mathworks.com/matlabcentral/fileexchange).
-Unfortunately most were found to depend on the Statistics Toolbox, [except one](https://mathworks.com/matlabcentral/fileexchange/43135-regression-utilities), which was judged to be slower and less versatile.)
+Unfortunately, most were found to depend on the Statistics Toolbox, [except one](https://mathworks.com/matlabcentral/fileexchange/43135-regression-utilities), which was judged to be slower and less versatile.)
+
+See the [changelog](#changelog) below for further modifications.
 
 ## Installation
 
@@ -36,9 +35,10 @@ Please refer to the comments in the header lines of [TheilSen.m](TheilSen.m).
 
 ### Example
 
-The script [example.m](example.m) simulates data based on known "true" values with minor, additive Gaussian noise.
+The script [example.m](example.m) simulates data based on known, "true" values with minor, additive Gaussian noise.
 The data are then corrupted with a small percentage of outliers.
-It then fits and compares the least squares with the Theil-Sen estimator.
+
+The data are fit with the Theil-Sen estimator and least squares, for comparison.
 Note how a few "unlucky" outliers can bias the least squares estimate (LS), but have little effect on the Theil-Sen estimator (TS).
 
 <img src="example.svg" alt="plot from example.m" width=500px />
