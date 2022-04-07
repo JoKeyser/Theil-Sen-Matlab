@@ -18,7 +18,7 @@ function coef = TheilSen(X, y)
 %         to one predictor in X, i.e. it will have as many columns as X.
 %         The first row, i.e. coef(1, :), contains the estimated offset(s).
 %         The second row, i.e. coef(2, :), contains the estimated slope(s).
-%         (This output format is chosen to avoid confusion, e.g. with previous
+%         (This output format was chosen to avoid confusion, e.g. with previous
 %          versions of this code.)
 %
 % EXAMPLE
@@ -39,7 +39,7 @@ function coef = TheilSen(X, y)
 sizeX = size(X);
 sizeY = size(y);
 
-if length(sizeY) ~= 2 || sizeY(1) < 2 || sizeY(2) ~= 1 || ~isnumeric(Y)
+if length(sizeY) ~= 2 || sizeY(1) < 2 || sizeY(2) ~= 1 || ~isnumeric(y)
     error('Input y must be a column array of at least 2 observed responses.')
 end
 
@@ -72,20 +72,21 @@ Num_Pred = sizeX(2);  % columns in X are (independent) predictor variables
 C = nan(Num_Obs, Num_Pred, Num_Obs);
 for i = 1:Num_Obs
     C(:, :, i) = bsxfun(@rdivide, ...
-        bsxfun(@minus, y(i), y(:)), ...
-        bsxfun(@minus, X(i, 1:end), X(:, 1:end)));
+                        bsxfun(@minus, y(i), y), ...
+                        bsxfun(@minus, X(i, :), X));
 end
 
 % stack layers of C to 2D
-Cprm = reshape( permute(C, [1, 3, 2]), [], size(C, 2), 1 );
+Cprm = reshape(permute(C, [1, 3, 2]), ...
+               [], size(C, 2), 1);
 
 % estimate slope as the median of all pairwise slopes (per predictor column)
 b1s = median(Cprm, 1, 'omitnan');
 
 % estimate offset as the median of all pairwise offsets (per predictor column)
-b0s = median(bsxfun(@minus, y(:), ...
-             bsxfun(@times, b1s, X(:, 1:end))), ...
-            'omitnan');
+b0s = median(bsxfun(@minus, y, ...
+                    bsxfun(@times, b1s, X)), ...
+             'omitnan');
 
 coef = [b0s; b1s];
 end
