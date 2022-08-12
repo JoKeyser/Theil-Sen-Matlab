@@ -1,4 +1,4 @@
-function coef = TheilSen(X, y)
+function [coef, rsqrd] = TheilSen(X, y)
 % THEILSEN performs Theil-Sen robust simple linear regression(s) of X on y.
 % 
 % For convenience, the input X may contain more than one predictor variable;
@@ -18,13 +18,14 @@ function coef = TheilSen(X, y)
 %   y: A column vector containing the observations of the response variable.
 %
 % OUTPUT
-%   coef: Estimated regression coefficients for each predictor column in X, with
-%         respect to the response variable y. Each column in coef corresponds
-%         to one predictor in X, i.e. it will have as many columns as X.
-%         The first row, i.e. coef(1, :), contains the estimated offset(s).
-%         The second row, i.e. coef(2, :), contains the estimated slope(s).
-%         (This output format was chosen to avoid confusion, e.g. with previous
-%          versions of this code.)
+%    coef: Estimated regression coefficients for each predictor column in X,
+%          with respect to the response variable y. Each column in coef
+%          corresponds to one predictor in X, i.e. it has as many columns as X.
+%          The first row, i.e. coef(1, :), contains the estimated offset(s).
+%          The second row, i.e. coef(2, :), contains the estimated slope(s).
+%          (This output format was chosen to avoid confusion, e.g. with previous
+%           versions of this code.)
+%   rsqrd: Ordinary R² (coefficient of determination) per predictor column in X.
 %
 % EXAMPLE
 %   See accompanying file example.m.
@@ -108,5 +109,18 @@ coef = [b0s; b1s];
 if any(isnan(coef))
     warning('TheilSen:NaNoutput', ...
             'Output contains NaN; check for degenerate inputs.')
+end
+
+% If requested, output the ordinary/unadjusted R², per predictor column in X.
+if nargout > 1
+    % compute total sum of squares relative to the mean
+    sum_sq_total = sum(power(y - mean(y), 2));
+    sums_sq_total = repmat(sum_sq_total, 1, Num_Pred);
+    % compute the residual sum(s) of squares relative to the regression line(s)
+    ys_model = b0s + b1s .* X;
+    ys_data = repmat(y, 1, Num_Pred);
+    sums_sq_resid = sum(power(ys_data - ys_model, 2));
+    % compute R² as 1 - SSresid / SStotal (i.e., the unadjusted version of R²)
+    rsqrd = 1 - sums_sq_resid ./ sums_sq_total;
 end
 end

@@ -48,6 +48,7 @@ Note how a few "unlucky" outliers can bias the least squares estimate (LS), but 
 - October 2014 by Z. Danziger: Original version.
 - September 2015 by Z. Danziger: Updated help, speed increase for 2D case
 - March 2022 by J. Keyser: Adjusted formatting, added documentation, improved example and added plot, replaced `nanmedian(X)` with `median(X, 'omitnan')`, removed 2D special case, restructured input and output parameters.
+- August 2022 by J. Keyser: Explicit omission of identical x coordinates, added coefficient of determination (unadjusted R²) as optional output.
 
 ## Contributing and project status
 

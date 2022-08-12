@@ -30,7 +30,7 @@ data_y(outlr_idx) = outlr_y;
 est_ls = [ones(N_total, 1), data_x] \ data_y;
 
 % Estimate Theil-Sen parameters.
-est_ts = TheilSen(data_x, data_y);
+[est_ts, ~] = TheilSen(data_x, data_y);
 
 % Plot everything and add comparison of estimates to title.
 figure()
@@ -52,9 +52,9 @@ data_x1 = data_x;
 data_x2 = +10 - 2 * data_x1 + randn(size(data_x1)) * SDx_usual;
 data_x3 = -50 + 5 * data_x1 + randn(size(data_x1)) * SDx_usual;
 X = [data_x1, data_x2, data_x3];
-est_ts = TheilSen(X, data_y);
+[est_ts, r_sqrd] = TheilSen(X, data_y);
 
-% plot both simple regressions; note mainly the difference between x-axes
+% plot all simple regressions; note mainly the difference between x-axes
 num_pred = size(X, 2);
 figure()
 for pp = 1:num_pred
