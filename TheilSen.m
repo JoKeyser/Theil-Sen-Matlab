@@ -5,6 +5,11 @@ function coef = TheilSen(X, y)
 % but note that two or more predictor variables in X are treated as independent
 % simple regressions: Do not confuse the output with multiple regression.
 %
+% With x denoting a single column vector of X, the returned slope estimator is
+% the median of the set of slopes of data point pairs,
+% (y(j) - y(i)) / (x(j) - x(i)), with x(i) ≠ x(j).
+% The returned intercept is the median of y - slope_estimator * x.
+%
 % THEILSEN treats NaNs in X or y as missing values and ignores them.
 %
 % INPUT
@@ -28,6 +33,9 @@ function coef = TheilSen(X, y)
 %   - Gilbert, Richard O. (1987), "6.5 Sen's Nonparametric Estimator of Slope",
 %     Statistical Methods for Environmental Pollution Monitoring,
 %     John Wiley and Sons, pp. 217-219, ISBN 978-0-471-28878-7
+%   - Sen, P. K. (1968). Estimates of the Regression Coefficient Based on
+%     Kendall’s Tau. Journal of the American Statistical Association, 63(324),
+%     1379–1389. https://doi.org/10.1080/01621459.1968.10480934
 %
 % AUTHORS
 %   2014-15 Zachary Danziger
@@ -63,6 +71,8 @@ Num_Pred = sizeX(2);  % columns in X are (independent) predictor variables
 % for i = 1:Num_Obs-1
 %     C(i, i:end) = (y(i) - y(i:end)) ./ (X(i) - X(i:end));
 % end
+% % relabel infinite values (due to div by 0 = x(i) - x(j)) as NaNs-to-ignore.
+% C(isinf(C)) = NaN;
 % % estimate slope as the median of all pairwise slopes
 % b1 = median(C(:), 'omitnan');
 % % estimate offset as the median of all pairwise offsets
@@ -75,6 +85,11 @@ for i = 1:Num_Obs
                         bsxfun(@minus, y(i), y), ...
                         bsxfun(@minus, X(i, :), X));
 end
+
+% Relabel infinite values as NaN, to be omitted in the median calculation below.
+% Infinite values can occur if a data pair has identical x coordinates, leading
+% to division by zero, yielding -Inf or +Inf, depending on the numerator.
+C(isinf(C)) = NaN;
 
 % stack layers of C to 2D
 Cprm = reshape(permute(C, [1, 3, 2]), ...
@@ -89,4 +104,9 @@ b0s = median(bsxfun(@minus, y, ...
              'omitnan');
 
 coef = [b0s; b1s];
+
+if any(isnan(coef))
+    warning('TheilSen:NaNoutput', ...
+            'Output contains NaN; check for degenerate inputs.')
+end
 end

@@ -1,5 +1,5 @@
 %% Simulate data and compare Theil-Sen estimator with least squares.
-clearvars *
+clearvars('*')
 
 % Choose total sample size and fraction of outliers:
 N_total = 20;
@@ -63,3 +63,8 @@ for pp = 1:num_pred
     plot(X(:, pp), data_y, 'k^', ...
     plims, est_ts(1, pp) + plims * est_ts(2, pp), 'b-', 'linewidth', 2)
 end
+
+%% Check that only identical x coordinates lead to warning and NaNs in output.
+data_x = ones(5);
+data_y = rand(5, 1);
+TheilSen(data_x, data_y)
