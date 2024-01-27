@@ -63,7 +63,7 @@ If you find a bug, please let the author(s) know.
 ## Authors
 
 - Arnout Tilgenkamp ([Matlab profile](https://mathworks.com/matlabcentral/profile/authors/1561419))
-- Zachary Danziger ([Matlab profile](https://de.mathworks.com/matlabcentral/profile/authors/1044524)
+- Zachary Danziger ([Matlab profile](https://de.mathworks.com/matlabcentral/profile/authors/1044524))
 - Johannes Keyser ([Matlab profile](https://mathworks.com/matlabcentral/profile/authors/2267277))
 
 ## License
